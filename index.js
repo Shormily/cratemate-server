@@ -42,7 +42,8 @@ transporter.verify(function (error, success) {
 
 app.post('/send-email', upload.single('pdf'), async (req, res) => {
   try {
-    const { firstname, lastname, gender, birthday, subject, email, experience,phone,select,address } = req.body;
+    const { firstname, lastname, gender, birthday, subject, email, experience,phone,select,address,message,jobtitle,companyname } = req.body;
+    
     console.log(req.body)
     // Create an email with Nodemailer
     const mailOptions = {
@@ -60,6 +61,9 @@ app.post('/send-email', upload.single('pdf'), async (req, res) => {
         Select: ${select}
         Address: ${address}
         Experience: ${experience}
+        Message: ${message}
+        Jobtitle: ${jobtitle}
+        Companyname: ${companyname}
       `,
       attachments: [
         {
@@ -68,9 +72,23 @@ app.post('/send-email', upload.single('pdf'), async (req, res) => {
         },
       ],
     };
-
+    const mailOptionse = {
+      from: `${process.env.DB_USER}`,
+      to: 'aicratmate@gmail.com',
+      subject: subject,
+      text: ` 
+      Firstname: ${firstname}
+      Lastname: ${lastname}
+      Phone: ${phone}
+        Email: ${email}
+        Message: ${message}
+        Jobtitle: ${jobtitle}
+        Companyname: ${companyname}
+      `,
+    }
     // Send the email
     await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptionse);
 
     res.status(200).send('Email sent successfully');
   } catch (error) {
@@ -79,6 +97,39 @@ app.post('/send-email', upload.single('pdf'), async (req, res) => {
   }
 });
 
+
+
+app.post('/send-message', upload.single('pdf'), async (req, res) => {
+  try {
+    const { firstname, lastname, subject ,email,phone,message,jobtitle,companyname } = req.body;
+    
+    console.log(req.body)
+    // Create an email with Nodemailer
+   
+    const mailOptionse = {
+      from: `${process.env.DB_USER}`,
+      to: 'aicratmate@gmail.com',
+      subject: subject,
+      text: ` 
+      Firstname: ${firstname}
+      Lastname: ${lastname}
+      Phone: ${phone}
+        Email: ${email}
+        Message: ${message}
+        Jobtitle: ${jobtitle}
+        Companyname: ${companyname}
+      `,
+    }
+    // Send the email
+  
+    await transporter.sendMail(mailOptionse);
+
+    res.status(200).send('Email sent successfully');
+  } catch (error) {
+    console.error('Error sending email:', error);
+    res.status(500).send('Error sending email');
+  }
+});
 app.get("/", (req, res) => {
   res.send("doctor is running");
 });
